@@ -250,7 +250,7 @@ export default class AnyButton {
                 "type":"button"
             });
         this.nodes.editButton.innerHTML = this.api.i18n.t('Edit');
-        this.nodes.editButton.addEventListener("change", (event) => {
+        this.nodes.editButton.addEventListener("click", (event) => {
             this.data = {
                 "link": this.nodes.linkInput.textContent,
                 "text": this.nodes.textInput.textContent
