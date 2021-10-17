@@ -228,12 +228,14 @@ export default class AnyButton {
             case AnyButton.STATE.EDIT:
                 this.nodes.inputHolder.classList.remove(this.CSS.hide);
                 this.nodes.anyButtonHolder.classList.add(this.CSS.hide);
+                this.nodes.toggleHolder.classList.add(this.CSS.hide);
                 this.nodes.toggleInput.checked = 0;
 
                 break;
             case AnyButton.STATE.VIEW:
                 this.nodes.inputHolder.classList.add(this.CSS.hide);
                 this.nodes.anyButtonHolder.classList.remove(this.CSS.hide);
+                this.nodes.toggleHolder.classList.remove(this.CSS.hide);
                 this.nodes.toggleInput.checked = 1;
                 break;
         }
