@@ -214,7 +214,7 @@ export default class AnyButton {
 
     makeAnyButtonHolder(){
         const anyButtonHolder = this.make('div', [this.CSS.hide, this.CSS.anyButtonHolder]);
-        this.nodes.anyButton = this.make('a',[this.CSS.btn, this.CSS.btnColor],{
+        this.nodes.anyButton = this.make('a',[this.CSS.btnColor],{
             target: '_blank',
             rel: 'nofollow noindex noreferrer',
         });
