@@ -129,7 +129,6 @@ export default class AnyButton {
             btnColor: "btn--default",
             toggleSwitch: "toggle-switch",
             editButton: "edit-button",
-            toggleLabel: "toggle-label",
         }
 
         this.CSS = Object.assign(_CSS, config.css)
@@ -242,8 +241,7 @@ export default class AnyButton {
     makeToggle(){
         /**
          * <div class="toggle-switch">
-         <input id="toggle" class="toggle-input" type='checkbox' />
-         <label for="toggle" class="toggle-label"/>
+         <button class="edit-button" type='button'>Edit</button>
          </div>
          */
         const toggleHolder = this.make('div', [this.CSS.toggleSwitch]);
@@ -252,8 +250,6 @@ export default class AnyButton {
                 "type":"button"
             });
         this.nodes.editButton.innerHTML = this.api.i18n.t('Edit');
-        const label = this.make('label', [this.CSS.toggleLabel],{"for":"toggle"});
-
         this.nodes.editButton.addEventListener("change", (event) => {
             this.data = {
                 "link": this.nodes.linkInput.textContent,
