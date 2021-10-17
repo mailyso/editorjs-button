@@ -128,7 +128,7 @@ export default class AnyButton {
             anyButtonHolder: "anyButtonContainer__anyButtonHolder",
             btnColor: "btn--default",
             toggleSwitch: "toggle-switch",
-            toggleInput: "toggle-input",
+            editButton: "edit-button",
             toggleLabel: "toggle-label",
         }
 
@@ -229,14 +229,12 @@ export default class AnyButton {
                 this.nodes.inputHolder.classList.remove(this.CSS.hide);
                 this.nodes.anyButtonHolder.classList.add(this.CSS.hide);
                 this.nodes.toggleHolder.classList.add(this.CSS.hide);
-                this.nodes.toggleInput.checked = 0;
 
                 break;
             case AnyButton.STATE.VIEW:
                 this.nodes.inputHolder.classList.add(this.CSS.hide);
                 this.nodes.anyButtonHolder.classList.remove(this.CSS.hide);
                 this.nodes.toggleHolder.classList.remove(this.CSS.hide);
-                this.nodes.toggleInput.checked = 1;
                 break;
         }
     }
@@ -249,22 +247,25 @@ export default class AnyButton {
          </div>
          */
         const toggleHolder = this.make('div', [this.CSS.toggleSwitch]);
-        this.nodes.toggleInput = this.make('input', [this.CSS.toggleInput],
+        this.nodes.editButton = this.make('button', [this.CSS.editButton],
             {
-                "type":"checkbox",
-                "id":"toggle"
+                "type":"button"
             });
+        this.nodes.editButton.innerHTML = `${this.api.i18n.t('Edit Button Text')} <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>`;
         const label = this.make('label', [this.CSS.toggleLabel],{"for":"toggle"});
 
-        this.nodes.toggleInput.addEventListener("change", (event) => {
+        this.nodes.editButton.addEventListener("change", (event) => {
             this.data = {
                 "link": this.nodes.linkInput.textContent,
                 "text": this.nodes.textInput.textContent
             }
-            this.show(Number(this.nodes.toggleInput.checked))
+            this.show(AnyButton.STATE.EDIT);
         })
-        toggleHolder.appendChild(this.nodes.toggleInput);
-        toggleHolder.appendChild(label);
+        toggleHolder.appendChild(this.nodes.editButton);
 
         return toggleHolder;
     }
