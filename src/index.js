@@ -127,7 +127,7 @@ export default class AnyButton {
             registButton: "anyButtonContainer__registerButton",
             anyButtonHolder: "anyButtonContainer__anyButtonHolder",
             btnColor: "btn--default",
-            toggleSwitch: "toggle-switch",
+            editButtonContainer: "edit-button-container",
             editButton: "edit-button",
         }
 
@@ -244,7 +244,7 @@ export default class AnyButton {
          <button class="edit-button" type='button'>Edit</button>
          </div>
          */
-        const toggleHolder = this.make('div', [this.CSS.toggleSwitch]);
+        const toggleHolder = this.make('div', [this.CSS.editButtonContainer]);
         this.nodes.editButton = this.make('button', [this.CSS.editButton],
             {
                 "type":"button"
