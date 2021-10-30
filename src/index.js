@@ -129,6 +129,7 @@ export default class AnyButton {
             btnColor: "btn--default",
             editButtonContainer: "edit-button-container",
             editButton: "edit-button",
+            inputError: "anyButtonContainer__input--error",
         }
 
         this.CSS = Object.assign(_CSS, config.css)
@@ -174,11 +175,17 @@ export default class AnyButton {
             contentEditable: !this.readOnly,
         });
         this.nodes.textInput.dataset.placeholder = this.api.i18n.t('Button Text');
+        this.nodes.textInput.addEventListener("keypress", (e) => {
+          this.validateTextInput(e.target.value);
+        });
 
         this.nodes.linkInput = this.make('div', [this.api.styles.input, this.CSS.input,  this.CSS.inputLink], {
             contentEditable: !this.readOnly,
         })
         this.nodes.linkInput.dataset.placeholder = this.api.i18n.t('Link Url');
+        this.nodes.linkInput.addEventListener("keypress", (e) => {
+          this.validateLinkInput(e.target.value);
+        });
 
         this.nodes.registButton = this.make('button',[this.api.styles.button, this.CSS.registButton]);
         this.nodes.registButton.type = 'button';
@@ -200,6 +207,22 @@ export default class AnyButton {
         return inputHolder;
     }
 
+    validateLinkInput(urlString) {
+      if (/(https:\/\/|http:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(urlString)) {
+        this.nodes.linkInput.classList.remove(this.CSS.inputError);
+      } else {
+        this.nodes.linkInput.classList.add(this.CSS.inputError);
+      }
+    }
+
+    validateTextInput(textString) {
+      if (textString !== null || textString !== "") {
+        this.nodes.textInput.classList.remove(this.CSS.inputError);
+      } else {
+        this.nodes.textInput.classList.add(this.CSS.inputError);
+      }
+    }
+
     init(){
         this.nodes.textInput.textContent = this._data.text;
         this.nodes.linkInput.textContent = this._data.link;
@@ -210,7 +233,7 @@ export default class AnyButton {
         this.nodes.anyButton.setAttribute("href", this._data.link);
         this.changeState(state);
     }
-
+  
     makeAnyButtonHolder(){
         const anyButtonHolder = this.make('div', [this.CSS.hide, this.CSS.anyButtonHolder]);
         this.nodes.anyButton = this.make('a',[this.CSS.btnColor],{
