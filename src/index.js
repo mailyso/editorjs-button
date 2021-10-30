@@ -2,309 +2,417 @@ import css from './index.css';
 
 export default class AnyButton {
 
-    /**
-     *
-     * @returns {{icon: string, title: string}}
-     */
-    static get toolbox(){
-        return {
-            title:"Button",
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" enable-background="new 0 0 512 512" height="20" viewBox="0 0 512 512" width="20"><path d="m237.102 366v-90.018h-90c-11.046 0-20-8.954-20-20s8.954-20 20-20h90v-90.982c0-11.046 8.954-20 20-20s20 8.954 20 20v90.982h90c11.046 0 20 8.954 20 20s-8.954 20-20 20h-90v90.018c0 11.046-8.954 20-20 20s-20-8.954-20-20zm254.898-15c11.046 0 20-8.954 20-20v-251c0-44.112-35.888-80-80-80h-352c-44.112 0-80 35.888-80 80v352c0 44.112 35.888 80 80 80h352c44.112 0 80-35.888 80-80 0-11.046-8.954-20-20-20s-20 8.954-20 20c0 22.056-17.944 40-40 40h-352c-22.056 0-40-17.944-40-40v-352c0-22.056 17.944-40 40-40h352c22.056 0 40 17.944 40 40v251c0 11.046 8.954 20 20 20z"/></svg>'
-        }
+  /**
+   *
+   * @returns {{icon: string, title: string}}
+   */
+  static get toolbox() {
+    return {
+      title: "Button",
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="17" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <line x1="3" y1="12" x2="6" y2="12" />
+      <line x1="12" y1="3" x2="12" y2="6" />
+      <line x1="7.8" y1="7.8" x2="5.6" y2="5.6" />
+      <line x1="16.2" y1="7.8" x2="18.4" y2="5.6" />
+      <line x1="7.8" y1="16.2" x2="5.6" y2="18.4" />
+      <path d="M12 12l9 3l-4 2l-2 4l-3 -9" />
+    </svg>`
+    }
+  }
+
+  /**
+   * Returns true to notify the core that read-only mode is supported
+   *
+   * @return {boolean}
+   */
+  static get isReadOnlySupported() {
+    return true;
+  }
+  /**
+   *
+   * @returns {boolean}
+   */
+  static get enableLineBreaks() {
+    return false;
+  }
+
+
+  /**
+   *
+   * @returns {{EDIT: number, VIEW: number}}
+   * @constructor
+   */
+  static get STATE() {
+    return {
+      EDIT: 0,
+      VIEW: 1
+    };
+  }
+
+  /**
+   * Allowed button alignments
+   *
+   * @public
+   * @returns {{left: string, center: string}}
+   */
+  static get ALIGNMENTS() {
+    return {
+      left: 'left',
+      center: 'center',
+      right: 'right',
+      justify: 'justify'
+    };
+  }
+
+  /**
+   * Default button alignment
+   *
+   * @public
+   * @returns {string}
+   */
+  static get DEFAULT_ALIGNMENT() {
+    return AnyButton.ALIGNMENTS.center;
+  }
+
+  /**
+   *
+   * @param data
+   */
+  set data(data) {
+    this._data = Object.assign({}, {
+      link: this.api.sanitizer.clean(data.link || "", AnyButton.sanitize),
+      text: this.api.sanitizer.clean(data.text || "", AnyButton.sanitize),
+      alignment: data.alignment || this.config.defaultAlignment || AnyButton.DEFAULT_ALIGNMENT,
+    });
+  }
+  /**
+   *
+   * @returns {{text: string, link: string}}
+   */
+  get data() {
+    return this._data;
+  }
+
+  /**
+   * セーブ時のバリデーション
+   * @param savedData
+   * @returns {boolean}
+   */
+  validate(savedData) {
+    if (this._data.link === "" || this._data.text === "") {
+      return false;
     }
 
-    /**
-     * Returns true to notify the core that read-only mode is supported
-     *
-     * @return {boolean}
-     */
-    static get isReadOnlySupported() {
-        return true;
+    return true;
+  }
+  /**
+   *
+   * @param block
+   * @returns {{caption: string, text: string, alignment: string}}
+   */
+  save(block) {
+    return this._data;
+  }
+
+  /**
+   * タグを全部削除する
+   * @returns {{link: boolean, text: boolean}}
+   */
+  static get sanitize() {
+    return {
+      text: false,
+      link: false
     }
-    /**
-     *
-     * @returns {boolean}
-     */
-    static get enableLineBreaks() {
-        return false;
+  }
+
+  /**
+   *
+   * @param data
+   * @param config
+   * @param api
+   * @param readOnly
+   */
+  constructor({ data, config, api, readOnly }) {
+    this.api = api;
+    this.config = config;
+    this.readOnly = readOnly;
+
+    this.nodes = {
+      wrapper: null,
+      container: null,
+      inputHolder: null,
+      toggleHolder: null,
+      anyButtonHolder: null,
+      textInput: null,
+      linkInput: null,
+      registButton: null,
+      anyButton: null,
+    }
+    //css overwrite
+    const _CSS = {
+      baseClass: this.api.styles.block,
+      hide: "hide",
+      btn: "btn",
+      container: "anyButtonContainer",
+      input: "anyButtonContainer__input",
+
+      inputHolder: "anyButtonContainer__inputHolder",
+      inputText: "anyButtonContainer__input--text",
+      inputLink: "anyButtonContainer__input--link",
+      registButton: "anyButtonContainer__registerButton",
+      anyButtonHolder: "anyButtonContainer__anyButtonHolder",
+      btnColor: "btn--default",
+      editButtonContainer: "anyButtonContainer_editButtonHolder",
+      editButton: "anyButtonContainer_editButton",
+      inputError: "anyButtonContainer__input--error",
+      alignment: {
+        left: 'anyButtonContainer__anyButtonHolder--left',
+        center: 'anyButtonContainer__anyButtonHolder--center',
+        right: 'anyButtonContainer__anyButtonHolder--right',
+        justify: 'anyButtonContainer__anyButtonHolder--justify',
+      }
     }
 
+    this.CSS = Object.assign(_CSS, config.css)
 
-    /**
-     *
-     * @returns {{EDIT: number, VIEW: number}}
-     * @constructor
-     */
-    static get STATE() {
-        return {
-            EDIT:0,
-            VIEW:1
-        };
+    this.settings = [
+      {
+        name: 'left',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" id="Layer" enable-background="new 0 0 64 64" height="20" viewBox="0 0 64 64" width="20"><path d="m54 8h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 52h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m10 23h28c1.104 0 2-.896 2-2s-.896-2-2-2h-28c-1.104 0-2 .896-2 2s.896 2 2 2z"/><path d="m54 30h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m10 45h28c1.104 0 2-.896 2-2s-.896-2-2-2h-28c-1.104 0-2 .896-2 2s.896 2 2 2z"/></svg>`
+      },
+      {
+        name: 'center',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" id="Layer" enable-background="new 0 0 64 64" height="20" viewBox="0 0 64 64" width="20"><path d="m54 8h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 52h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m46 23c1.104 0 2-.896 2-2s-.896-2-2-2h-28c-1.104 0-2 .896-2 2s.896 2 2 2z"/><path d="m54 30h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m46 45c1.104 0 2-.896 2-2s-.896-2-2-2h-28c-1.104 0-2 .896-2 2s.896 2 2 2z"/></svg>`
+      },
+      {
+        name: 'right',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" id="Layer" enable-background="new 0 0 64 64" height="20" viewBox="0 0 64 64" width="20"><path d="m54 8h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 52h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 19h-28c-1.104 0-2 .896-2 2s.896 2 2 2h28c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 30h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"/><path d="m54 41h-28c-1.104 0-2 .896-2 2s.896 2 2 2h28c1.104 0 2-.896 2-2s-.896-2-2-2z"/></svg>`
+      },
+      {
+        name: 'justify',
+        icon: `<svg viewBox="0 0 64 64" width="20" height="20"><path d="m54 8h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"></path><path d="m54 52h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"></path><path d="M 52.867 19 L 10.914 19 C 9.26 19 7.918 19.896 7.918 21 C 7.918 22.104 9.26 23 10.914 23 L 52.867 23 C 54.522 23 55.863 22.104 55.863 21 C 55.863 19.896 54.522 19 52.867 19 Z" style=""></path><path d="m54 30h-44c-1.104 0-2 .896-2 2s.896 2 2 2h44c1.104 0 2-.896 2-2s-.896-2-2-2z"></path><path d="M 52.779 41 L 11.113 41 C 9.469 41 8.136 41.896 8.136 43 C 8.136 44.104 9.469 45 11.113 45 L 52.779 45 C 54.421 45 55.754 44.104 55.754 43 C 55.754 41.896 54.421 41 52.779 41 Z" style=""></path></svg>`
+      }
+    ];
+
+    this.data = {
+      link: data.link || "",
+      text: data.text || "",
+      alignment: data.alignment || config.defaultAlignment || AnyButton.DEFAULT_ALIGNMENT
+    };
+  }
+
+  render() {
+    this.nodes.container = this.make('div', [this.CSS.baseClass, this.CSS.container]);
+
+    //入力用
+    this.nodes.inputHolder = this.makeInputHolder();
+    //toggle
+    this.nodes.toggleHolder = this.makeToggle();
+    //display button
+    this.nodes.anyButtonHolder = this.makeAnyButtonHolder();
+
+
+    this.nodes.container.appendChild(this.nodes.toggleHolder);
+    this.nodes.container.appendChild(this.nodes.inputHolder);
+    this.nodes.container.appendChild(this.nodes.anyButtonHolder);
+
+    if (this._data.link !== "") {
+      this.init()
+      this.show(AnyButton.STATE.VIEW)
     }
-    /**
-     *
-     * @param data
-     */
-    set data(data) {
-        this._data = Object.assign({}, {
-            link: this.api.sanitizer.clean(data.link || "", AnyButton.sanitize),
-            text: this.api.sanitizer.clean(data.text || "", AnyButton.sanitize)
+
+    return this.nodes.container;
+  }
+
+  renderSettings() {
+    const wrapper = document.createElement('div');
+
+    this.settings.map(tune => {
+      /**
+       * buttonのdomを作成して、alignのtoggleをactiveに設定する
+       * @type {HTMLDivElement}
+       */
+      const button = document.createElement('div');
+      button.classList.add('cdx-settings-button');
+      button.innerHTML = tune.icon;
+
+      button.classList.toggle(this.api.styles.settingsButtonActive, tune.name === this.data.alignment);
+
+      wrapper.appendChild(button);
+
+      return button;
+    }).forEach((element, index, elements) => {
+
+      element.addEventListener('click', () => {
+
+        this._toggleTune(this.settings[index].name);
+
+        elements.forEach((el, i) => {
+          const { name } = this.settings[i];
+          el.classList.toggle(this.api.styles.settingsButtonActive, name === this.data.alignment);
+          //paragraphのdivにalignmentのclassをつける。
+          this.nodes.anyButtonHolder.classList.toggle(this.CSS.alignment[name], name === this.data.alignment)
         });
-    }
-    /**
-     *
-     * @returns {{text: string, link: string}}
-     */
-    get data() {
-        return this._data;
-    }
+      });
+    });
 
-    /**
-     * セーブ時のバリデーション
-     * @param savedData
-     * @returns {boolean}
-     */
-    validate(savedData){
-        if(this._data.link === "" || this._data.text === ""){
-            return false;
-        }
+    return wrapper;
+  }
 
-        return true;
-    }
-    /**
-     *
-     * @param block
-     * @returns {{caption: string, text: string, alignment: string}}
-     */
-    save(block){
-        return this._data;
-    }
+  makeInputHolder() {
+    const inputHolder = this.make('div', [this.CSS.inputHolder]);
+    this.nodes.textInput = this.make('div', [this.api.styles.input, this.CSS.input, this.CSS.inputText], {
+      contentEditable: !this.readOnly,
+    });
+    this.nodes.textInput.dataset.placeholder = this.api.i18n.t('Button Text');
+    this.nodes.textInput.addEventListener("keyup", (e) => {
+      this.validateTextInput(e.target.textContent);
+    });
 
-    /**
-     * タグを全部削除する
-     * @returns {{link: boolean, text: boolean}}
-     */
-    static get sanitize(){
-        return {
-            text: false,
-            link: false
-        }
-    }
+    this.nodes.linkInput = this.make('div', [this.api.styles.input, this.CSS.input, this.CSS.inputLink], {
+      contentEditable: !this.readOnly,
+    })
+    this.nodes.linkInput.dataset.placeholder = this.api.i18n.t('Link Url');
+    this.nodes.linkInput.addEventListener("keyup", (e) => {
+      this.validateLinkInput(e.target.textContent);
+    });
 
-    /**
-     *
-     * @param data
-     * @param config
-     * @param api
-     * @param readOnly
-     */
-    constructor({ data, config, api, readOnly }) {
-        this.api = api;
-        this.readOnly = readOnly;
-
-        this.nodes = {
-            wrapper: null,
-            container: null,
-            inputHolder: null,
-            toggleHolder: null,
-            anyButtonHolder: null,
-            textInput: null,
-            linkInput: null,
-            registButton: null,
-            anyButton: null,
-        }
-        //css overwrite
-        const _CSS = {
-            baseClass: this.api.styles.block,
-            hide: "hide",
-            btn: "btn",
-            container: "anyButtonContainer",
-            input: "anyButtonContainer__input",
-
-            inputHolder: "anyButtonContainer__inputHolder",
-            inputText: "anyButtonContainer__input--text",
-            inputLink: "anyButtonContainer__input--link",
-            registButton: "anyButtonContainer__registerButton",
-            anyButtonHolder: "anyButtonContainer__anyButtonHolder",
-            btnColor: "btn--default",
-            editButtonContainer: "edit-button-container",
-            editButton: "edit-button",
-            inputError: "anyButtonContainer__input--error",
-        }
-
-        this.CSS = Object.assign(_CSS, config.css)
-
+    this.nodes.registButton = this.make('button', [this.api.styles.button, this.CSS.registButton]);
+    this.nodes.registButton.type = 'button';
+    this.nodes.registButton.textContent = this.api.i18n.t('Set');
+    this.nodes.registButton.addEventListener('click', (event) => {
+      if (this.validateTextInput(this.nodes.textInput.textContent) && this.validateLinkInput(this.nodes.linkInput.textContent)) {
         this.data = {
-            link: "",
-            text: ""
-        };
-        this.data = data;
-
-    }
-
-    render(){
-        this.nodes.wrapper = this.make('div', this.CSS.baseClass);
-        this.nodes.container = this.make('div', this.CSS.container); //twitter-embed-tool
-
-        //入力用
-        this.nodes.inputHolder = this.makeInputHolder();
-        //toggle
-        this.nodes.toggleHolder = this.makeToggle();
-        //display button
-        this.nodes.anyButtonHolder = this.makeAnyButtonHolder();
-
-
-        this.nodes.container.appendChild(this.nodes.toggleHolder);
-        this.nodes.container.appendChild(this.nodes.inputHolder);
-        this.nodes.container.appendChild(this.nodes.anyButtonHolder);
-
-        if (this._data.link !== "") {
-            this.init()
-            this.show(AnyButton.STATE.VIEW)
+          link: this.nodes.linkInput.textContent,
+          text: this.nodes.textInput.textContent,
+          alignment: this.data.alignment
         }
-
-        this.nodes.wrapper.appendChild(this.nodes.container);
-
-        return this.nodes.wrapper;
-    }
-
-
-    makeInputHolder() {
-        const inputHolder = this.make('div', [this.CSS.inputHolder]);
-        this.nodes.textInput = this.make('div', [this.api.styles.input, this.CSS.input, this.CSS.inputText], {
-            contentEditable: !this.readOnly,
-        });
-        this.nodes.textInput.dataset.placeholder = this.api.i18n.t('Button Text');
-        this.nodes.textInput.addEventListener("keypress", (e) => {
-          this.validateTextInput(e.target.value);
-        });
-
-        this.nodes.linkInput = this.make('div', [this.api.styles.input, this.CSS.input,  this.CSS.inputLink], {
-            contentEditable: !this.readOnly,
-        })
-        this.nodes.linkInput.dataset.placeholder = this.api.i18n.t('Link Url');
-        this.nodes.linkInput.addEventListener("keypress", (e) => {
-          this.validateLinkInput(e.target.value);
-        });
-
-        this.nodes.registButton = this.make('button',[this.api.styles.button, this.CSS.registButton]);
-        this.nodes.registButton.type = 'button';
-        this.nodes.registButton.textContent = this.api.i18n.t('Set');
-
-
-        this.nodes.registButton.addEventListener('click', (event) => {
-            this.data = {
-                "link": this.nodes.linkInput.textContent,
-                "text": this.nodes.textInput.textContent
-            }
-            this.show(AnyButton.STATE.VIEW);
-        });
-
-        inputHolder.appendChild(this.nodes.textInput);
-        inputHolder.appendChild(this.nodes.linkInput);
-        inputHolder.appendChild(this.nodes.registButton);
-
-        return inputHolder;
-    }
-
-    validateLinkInput(urlString) {
-      if (/(https:\/\/|http:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(urlString)) {
-        this.nodes.linkInput.classList.remove(this.CSS.inputError);
-      } else {
-        this.nodes.linkInput.classList.add(this.CSS.inputError);
+        this.show(AnyButton.STATE.VIEW);
       }
+    });
+
+    inputHolder.appendChild(this.nodes.textInput);
+    inputHolder.appendChild(this.nodes.linkInput);
+    inputHolder.appendChild(this.nodes.registButton);
+
+    return inputHolder;
+  }
+
+  validateLinkInput(urlString) {
+    const isValidLink = /(https:\/\/|http:\/\/)(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(urlString);
+    if (isValidLink) {
+      this.nodes.linkInput.classList.remove(this.CSS.inputError);
+    } else {
+      this.nodes.linkInput.classList.add(this.CSS.inputError);
     }
 
-    validateTextInput(textString) {
-      if (textString !== null || textString !== "") {
-        this.nodes.textInput.classList.remove(this.CSS.inputError);
-      } else {
-        this.nodes.textInput.classList.add(this.CSS.inputError);
-      }
+    return isValidLink;
+  }
+
+  validateTextInput(textString) {
+    const isValidText = (textString !== null && textString !== "");
+    if (isValidText) {
+      this.nodes.textInput.classList.remove(this.CSS.inputError);
+    } else {
+      this.nodes.textInput.classList.add(this.CSS.inputError);
     }
 
-    init(){
-        this.nodes.textInput.textContent = this._data.text;
-        this.nodes.linkInput.textContent = this._data.link;
+    return isValidText;
+  }
+
+  init() {
+    this.nodes.textInput.textContent = this._data.text;
+    this.nodes.linkInput.textContent = this._data.link;
+  }
+
+  show(state) {
+    this.nodes.anyButton.textContent = this._data.text;
+    this.nodes.anyButton.setAttribute("href", this._data.link);
+    this.changeState(state);
+  }
+
+  makeAnyButtonHolder() {
+    const anyButtonHolder = this.make('div', [this.CSS.hide, this.CSS.anyButtonHolder, this.CSS.alignment[this.data.alignment]]);
+    this.nodes.anyButton = this.make('a', [this.CSS.btnColor], {
+      target: '_blank',
+      rel: 'nofollow noindex noreferrer',
+    });
+    this.nodes.anyButton.textContent = this.api.i18n.t("Default Button");
+    anyButtonHolder.appendChild(this.nodes.anyButton);
+    return anyButtonHolder;
+  }
+
+  changeState(state) {
+    switch (state) {
+      case AnyButton.STATE.EDIT:
+        this.nodes.inputHolder.classList.remove(this.CSS.hide);
+        this.nodes.anyButtonHolder.classList.add(this.CSS.hide);
+        this.nodes.toggleHolder.classList.add(this.CSS.hide);
+
+        break;
+      case AnyButton.STATE.VIEW:
+        this.nodes.inputHolder.classList.add(this.CSS.hide);
+        this.nodes.anyButtonHolder.classList.remove(this.CSS.hide);
+        this.nodes.toggleHolder.classList.remove(this.CSS.hide);
+        break;
     }
+  }
 
-    show(state){
-        this.nodes.anyButton.textContent = this._data.text;
-        this.nodes.anyButton.setAttribute("href", this._data.link);
-        this.changeState(state);
-    }
-  
-    makeAnyButtonHolder(){
-        const anyButtonHolder = this.make('div', [this.CSS.hide, this.CSS.anyButtonHolder]);
-        this.nodes.anyButton = this.make('a',[this.CSS.btnColor],{
-            target: '_blank',
-            rel: 'nofollow noindex noreferrer',
-        });
-        this.nodes.anyButton.textContent = this.api.i18n.t("Default Button");
-        anyButtonHolder.appendChild(this.nodes.anyButton);
-        return anyButtonHolder;
-    }
-
-    changeState(state){
-        switch (state) {
-            case AnyButton.STATE.EDIT:
-                this.nodes.inputHolder.classList.remove(this.CSS.hide);
-                this.nodes.anyButtonHolder.classList.add(this.CSS.hide);
-                this.nodes.toggleHolder.classList.add(this.CSS.hide);
-
-                break;
-            case AnyButton.STATE.VIEW:
-                this.nodes.inputHolder.classList.add(this.CSS.hide);
-                this.nodes.anyButtonHolder.classList.remove(this.CSS.hide);
-                this.nodes.toggleHolder.classList.remove(this.CSS.hide);
-                break;
-        }
-    }
-
-    makeToggle(){
-        /**
-         * <div class="toggle-switch">
-         <button class="edit-button" type='button'>Edit</button>
-         </div>
-         */
-        const toggleHolder = this.make('div', [this.CSS.editButtonContainer]);
-        this.nodes.editButton = this.make('button', [this.CSS.editButton],
-            {
-                "type":"button"
-            });
-        this.nodes.editButton.innerHTML = this.api.i18n.t('Edit');
-        this.nodes.editButton.addEventListener("click", (event) => {
-            this.data = {
-                "link": this.nodes.linkInput.textContent,
-                "text": this.nodes.textInput.textContent
-            }
-            this.show(AnyButton.STATE.EDIT);
-        })
-        toggleHolder.appendChild(this.nodes.editButton);
-
-        return toggleHolder;
-    }
-
+  makeToggle() {
     /**
-     * node 作成用
-     * @param tagName
-     * @param classNames
-     * @param attributes
-     * @returns {*}
+     * <div class="toggle-switch">
+     <button class="edit-button" type='button'>Edit</button>
+     </div>
      */
-    make(tagName, classNames = null, attributes = {}) {
-        const el = document.createElement(tagName);
+    const toggleHolder = this.make('div', [this.CSS.hide, this.CSS.editButtonContainer]);
+    this.nodes.editButton = this.make('button', [this.CSS.editButton],
+      {
+        "type": "button"
+      });
+    this.nodes.editButton.innerHTML = this.api.i18n.t('Edit');
+    this.nodes.editButton.addEventListener("click", (event) => {
+      this.data = {
+        link: this.nodes.linkInput.textContent,
+        text: this.nodes.textInput.textContent,
+        alignment: this.data.alignment,
+      }
+      this.show(AnyButton.STATE.EDIT);
+    })
+    toggleHolder.appendChild(this.nodes.editButton);
 
-        if (Array.isArray(classNames)) {
-            el.classList.add(...classNames);
-        } else if (classNames) {
-            el.classList.add(classNames);
-        }
+    return toggleHolder;
+  }
 
-        for (const attrName in attributes) {
-            el[attrName] = attributes[attrName];
-        }
+  /**
+   * node 作成用
+   * @param tagName
+   * @param classNames
+   * @param attributes
+   * @returns {*}
+   */
+  make(tagName, classNames = null, attributes = {}) {
+    const el = document.createElement(tagName);
 
-        return el;
+    if (Array.isArray(classNames)) {
+      el.classList.add(...classNames);
+    } else if (classNames) {
+      el.classList.add(classNames);
     }
+
+    for (const attrName in attributes) {
+      el[attrName] = attributes[attrName];
+    }
+
+    return el;
+  }
+
+  /**
+ * @private
+ * Click on the Settings Button
+ * @param {string} tune — tune name from this.settings
+ */
+  _toggleTune(tune) {
+    this.data.alignment = tune;
+  }
 }
