@@ -82,7 +82,7 @@ export default class AnyButton {
   set data(data) {
     this._data = Object.assign({}, {
       link: this.api.sanitizer.clean(data.link || "", AnyButton.sanitize),
-      text: this.api.sanitizer.clean(data.text || "", AnyButton.sanitize),
+      text: data.text,
       alignment: data.alignment || this.config.defaultAlignment || AnyButton.DEFAULT_ALIGNMENT,
     });
   }
