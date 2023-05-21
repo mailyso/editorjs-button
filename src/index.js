@@ -76,11 +76,11 @@ export default class AnyButton {
   }
 
   static get DEFAULT_TEXT_COLOR() {
-    return "#000";
+    return "#000000";
   }
 
   static get DEFAULT_BACKGROUND_COLOR() {
-    return "#FFF";
+    return "#F2F2F2";
   }
 
   /**
