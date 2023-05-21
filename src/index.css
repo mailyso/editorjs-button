@@ -15,10 +15,27 @@
   margin: auto;
 }
 
-.anyButtonContainer__inputHolder {}
+.anyButtonContainer__inputHolder {
+  margin-top: 10px;
+}
 
 .anyButtonContainer__inputHolder>* {
   margin-bottom: 10px;
+}
+
+.anyButtonContainer__colorsHolder {
+  display: flex;
+  gap: 10px;
+}
+
+.anyButtonContainer__colorHolder {
+  display: flex;
+  flex-direction: column;
+}
+
+.anyButtonContainer__colorHolder__label {
+  margin: 0;
+  font-size: 14px;
 }
 
 .anyButtonContainer__input {
@@ -38,6 +55,17 @@
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-a-b" width="13" height="14" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 16v-5.5a2.5 2.5 0 0 1 5 0v5.5m0 -4h-5" /><line x1="12" y1="6" x2="12" y2="18" /><path d="M16 16v-8h3a2 2 0 0 1 0 4h-3m3 0a2 2 0 0 1 0 4h-3" /></svg>');
 }
 
+.anyButtonContainer__input--color {
+  margin: 0;
+  font-size: 14px;
+  cursor: pointer;
+  height: 40px;
+  width: 120px;
+  padding: 2px 4px;
+  border: 1px solid lightgray;
+  border-radius: 3px;
+}
+
 .anyButtonContainer__input[contentEditable=true][data-placeholder]::before {
   position: absolute;
   content: attr(data-placeholder);
@@ -54,8 +82,16 @@
   opacity: 0;
 }
 
-.anyButtonContainer__input--error {
+.anyButtonContainer__input--link--error {
   background-image: url("data:image/svg+xml,%3Csvg width='13' height='14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8.567 13.629c.728.464 1.581.65 2.41.558l-.873.873A3.722 3.722 0 1 1 4.84 9.794L6.694 7.94a3.722 3.722 0 0 1 5.256-.008L10.484 9.4a5.209 5.209 0 0 1-.017.016 1.625 1.625 0 0 0-2.29.009l-1.854 1.854a1.626 1.626 0 0 0 2.244 2.35zm2.766-7.358a3.722 3.722 0 0 0-2.41-.558l.873-.873a3.722 3.722 0 1 1 5.264 5.266l-1.854 1.854a3.722 3.722 0 0 1-5.256.008L9.416 10.5a5.2 5.2 0 0 1 .017-.016 1.625 1.625 0 0 0 2.29-.009l1.854-1.854a1.626 1.626 0 0 0-2.244-2.35z' fill='rgb(224, 147, 147)' transform='translate(-3.667 -2.7)'/%3E%3C/svg%3E%0A");
+  background-color: #fff3f6;
+  border-color: #f3e0e0;
+  color: #a95a5a;
+  box-shadow: inset 0 1px 3px 0 rgba(146, 62, 62, .05);
+}
+
+.anyButtonContainer__input--text--error {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-a-b" width="13" height="14" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 16v-5.5a2.5 2.5 0 0 1 5 0v5.5m0 -4h-5" /><line x1="12" y1="6" x2="12" y2="18" /><path d="M16 16v-8h3a2 2 0 0 1 0 4h-3m3 0a2 2 0 0 1 0 4h-3" /></svg>');
   background-color: #fff3f6;
   border-color: #f3e0e0;
   color: #a95a5a;
@@ -95,16 +131,20 @@
 
 .anyButtonContainer_editButton {
   border: 1px solid #d2d6dc;
-  font-size: 13px;
-  padding: 3px 7px;
-  border-radius: .25rem
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: .25rem;
+  background: white;
 }
 
 .anyButtonContainer__registerButton {
   border: 1px solid #d2d6dc;
-  font-size: 13px;
-  padding: 3px 7px;
-  border-radius: .25rem
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: .25rem;
+  background: white;
 }
 
 .btn {

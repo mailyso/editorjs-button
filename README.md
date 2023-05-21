@@ -1,8 +1,8 @@
 ![](https://badgen.net/badge/Editor.js/v2.0/blue)
 
-# Set Link and Text and Generate button plugin for Editor.js
+# Set Link, Text, Alignment, Colors and Generate button plugin for Editor.js
 
-![画面収録 2020-12-13 16 59 53](https://user-images.githubusercontent.com/2194021/102006852-7a6fb880-3d67-11eb-98d2-20b7e88672df.gif)
+![example](https://user-images.githubusercontent.com/18032062/239719694-1c025beb-6355-4a10-bbbe-ed71edf6c08e.png)
 
 ## Installation
 
@@ -11,13 +11,13 @@
 Get the package
 
 ```shell
-npm i --save editorjs-button
+yarn add https://github.com/mailyso/editorjs-button
 ```
 
 Include module at your application
 
 ```javascript
-const anyButton = require('anyButton');
+import AnyButton from "editorjs-button";
 ```
 
 ### Download to your project's source dir
@@ -25,15 +25,11 @@ const anyButton = require('anyButton');
 1. Upload folder `dist` from repository
 2. Add `dist/bundle.js` file to your page.
 
-### Load from CDN
-
-`https://cdn.jsdelivr.net/npm/editorjs-button@1.0.1`
-
 ## Usage
 
 Add a new Tool to the `tools` property of the Editor.js initial config.
 
-```javascript
+```json
 tools: {
         AnyButton: {
           class: AnyButton,
@@ -41,7 +37,10 @@ tools: {
           config:{
             css:{
               "btnColor": "btn--gray",
-            }
+            },
+            defaultAlignment: "center",
+            defaultTextColor: "#000",
+            defaultBackgroundColor: "#000",
           }
         },
       },
@@ -49,34 +48,18 @@ tools: {
         messages: {
           tools: {
             "AnyButton": {
-              'Button Text': 'ボタンに表示するテキスト',
-              'Link Url': 'ボタンの飛び先のURL',
-              'Set': "設定する",
-              'Default Button': "デフォルト",
-            }
+            'Button Text': '버튼의 내용을 입력하세요.',
+            'Link Url': '버튼의 URL을 입력하세요. (https:// 포함)',
+            'Set': "확인",
+            'Default Button': "클릭",
+            'Edit': "수정",
+            'Text Color': "글자 색",
+            'Background Color': "배경 색",
+            },
           }
         },
       },
 }
-```
-
-## Config Params
-
-`i18n` overwrite if want to change default placeholder text,
-
-```
-i18n: {
-    messages: {
-      tools: {s
-        "AnyButton": {
-          'Button Text': 'ボタンに表示するテキスト',
-          'Link Url': 'ボタンの飛び先のURL',
-          'Set': "設定する",
-          'Default Button': "デフォルト",
-        }
-      }
-    },
-},
 ```
 
 if customize css, input filed, button design, and etc... 
@@ -91,10 +74,13 @@ config:{
 
 ## Output data
 
-| Field  | Type     | Description      |
-| ------ | -------- | ---------------- |
-| link   | `string` | Exclusion HTML Tag text |
-| text   | `string` | Exclusion HTML Tag text |
+| Field            | Type     | Description              |
+|------------------| -------- |--------------------------|
+| link             | `string` | Exclusion HTML Tag text  |
+| text             | `string` | Exclusion HTML Tag text  |
+| alignment        | `string` | Exclusion HTML Tag text  |
+| text_color       | `string` | Color picker value |
+| background_color | `string` | Color picker value  |
 
 
 ```json
@@ -102,8 +88,10 @@ config:{
             "type" : "AnyButton",
             "data" : {
                 "link" : "https://editorjs.io/",
-                "text" : "editorjs official"
+                "text" : "editorjs official",
+                "alignment": "center",
+                "text_color": "#000",
+                "button_color": "#fff"
             }
         }
 ```
-
