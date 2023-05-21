@@ -103,15 +103,17 @@
 
 .anyButtonContainer_editButton {
   border: 1px solid #d2d6dc;
-  font-size: 13px;
-  padding: 3px 7px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   border-radius: .25rem
 }
 
 .anyButtonContainer__registerButton {
   border: 1px solid #d2d6dc;
-  font-size: 13px;
-  padding: 3px 7px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   border-radius: .25rem
 }
 
