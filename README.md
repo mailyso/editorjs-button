@@ -41,7 +41,22 @@ this.editor = new EditorJS({
                 defaultBackgroundColor: "#FFFFFF",
             }
         }
-    }    
+    },
+    i18n: {
+        messages: {
+            tools: {
+                "AnyButton": {
+                    'Button Text': '버튼의 내용을 입력하세요.',
+                    'Link Url': '버튼의 URL을 입력하세요. (https:// 포함)',
+                    'Set': "확인",
+                    'Default Button': "클릭",
+                    'Edit': "수정",
+                    'Text Color': "글자 색",
+                    'Background Color': "배경 색",
+                },
+            },
+        },
+    },
 })
 ```
 
@@ -72,8 +87,8 @@ config:{
     "link": "https://editorjs.io/",
     "text": "editorjs official",
     "alignment": "center",
-    "text_color": "#000",
-    "button_color": "#fff"
+    "text_color": "#000000",
+    "button_color": "#ffffff"
   }
 }
 ```
