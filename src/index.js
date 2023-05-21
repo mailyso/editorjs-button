@@ -165,7 +165,8 @@ export default class AnyButton {
       btnColor: "btn--default",
       editButtonContainer: "anyButtonContainer_editButtonHolder",
       editButton: "anyButtonContainer_editButton",
-      inputError: "anyButtonContainer__input--error",
+      inputLinkError: "anyButtonContainer__input--link--error",
+      inputTextError: "anyButtonContainer__input--text--error",
       alignment: {
         left: 'anyButtonContainer__anyButtonHolder--left',
         center: 'anyButtonContainer__anyButtonHolder--center',
@@ -302,9 +303,9 @@ export default class AnyButton {
   validateLinkInput(urlString) {
     const isValidLink = /(https:\/\/|http:\/\/)(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(urlString);
     if (isValidLink) {
-      this.nodes.linkInput.classList.remove(this.CSS.inputError);
+      this.nodes.linkInput.classList.remove(this.CSS.inputLinkError);
     } else {
-      this.nodes.linkInput.classList.add(this.CSS.inputError);
+      this.nodes.linkInput.classList.add(this.CSS.inputLinkError);
     }
 
     return isValidLink;
@@ -313,9 +314,9 @@ export default class AnyButton {
   validateTextInput(textString) {
     const isValidText = (textString !== null && textString !== "");
     if (isValidText) {
-      this.nodes.textInput.classList.remove(this.CSS.inputError);
+      this.nodes.textInput.classList.remove(this.CSS.inputTextError);
     } else {
-      this.nodes.textInput.classList.add(this.CSS.inputError);
+      this.nodes.textInput.classList.add(this.CSS.inputTextError);
     }
 
     return isValidText;
@@ -405,6 +406,10 @@ export default class AnyButton {
     }
 
     return el;
+  }
+
+  get shortcut() {
+    return 'CMD+SHIFT+A';
   }
 
   /**
