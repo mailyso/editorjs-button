@@ -75,6 +75,14 @@ export default class AnyButton {
     return AnyButton.ALIGNMENTS.center;
   }
 
+  static get DEFAULT_TEXT_COLOR() {
+    return "#000";
+  }
+
+  static get DEFAULT_BACKGROUND_COLOR() {
+    return "#FFF";
+  }
+
   /**
    *
    * @param data
@@ -83,6 +91,8 @@ export default class AnyButton {
     this._data = Object.assign({}, {
       link: this.api.sanitizer.clean(data.link || "", AnyButton.sanitize),
       text: data.text,
+      text_color: data.text_color || this.config.defaultTextColor || AnyButton.DEFAULT_TEXT_COLOR,
+      background_color: data.background_color || this.config.defaultBackgroundColor || AnyButton.DEFAULT_BACKGROUND_COLOR,
       alignment: data.alignment || this.config.defaultAlignment || AnyButton.DEFAULT_ALIGNMENT,
     });
   }
@@ -146,6 +156,8 @@ export default class AnyButton {
       anyButtonHolder: null,
       textInput: null,
       linkInput: null,
+      textColorInput: null,
+      backgroundColorInput: null,
       registButton: null,
       anyButton: null,
     }
@@ -156,10 +168,13 @@ export default class AnyButton {
       btn: "btn",
       container: "anyButtonContainer",
       input: "anyButtonContainer__input",
-
       inputHolder: "anyButtonContainer__inputHolder",
+      colorsHolder: "anyButtonContainer__colorsHolder",
+      colorHolder: "anyButtonContainer__colorHolder",
+      colorHolderLabel: "anyButtonContainer__colorHolder__label",
       inputText: "anyButtonContainer__input--text",
       inputLink: "anyButtonContainer__input--link",
+      inputColor: "anyButtonContainer__input--color",
       registButton: "anyButtonContainer__registerButton",
       anyButtonHolder: "anyButtonContainer__anyButtonHolder",
       btnColor: "btn--default",
@@ -199,6 +214,8 @@ export default class AnyButton {
     this.data = {
       link: data.link || "",
       text: data.text || "",
+      text_color: data.text_color || config.defaultTextColor || AnyButton.DEFAULT_TEXT_COLOR,
+      background_color: data.background_color || config.defaultBackgroundColor || AnyButton.DEFAULT_BACKGROUND_COLOR,
       alignment: data.alignment || config.defaultAlignment || AnyButton.DEFAULT_ALIGNMENT
     };
   }
@@ -213,10 +230,9 @@ export default class AnyButton {
     //display button
     this.nodes.anyButtonHolder = this.makeAnyButtonHolder();
 
-
+    this.nodes.container.appendChild(this.nodes.anyButtonHolder);
     this.nodes.container.appendChild(this.nodes.toggleHolder);
     this.nodes.container.appendChild(this.nodes.inputHolder);
-    this.nodes.container.appendChild(this.nodes.anyButtonHolder);
 
     if (this._data.link !== "") {
       this.init()
@@ -268,7 +284,9 @@ export default class AnyButton {
     });
     this.nodes.textInput.dataset.placeholder = this.api.i18n.t('Button Text');
     this.nodes.textInput.addEventListener("keyup", (e) => {
-      this.validateTextInput(e.target.textContent);
+      if (this.validateTextInput(e.target.textContent)) {
+        this.onEditInput(this.nodes);
+      }
     });
 
     this.nodes.linkInput = this.make('div', [this.api.styles.input, this.CSS.input, this.CSS.inputLink], {
@@ -276,28 +294,64 @@ export default class AnyButton {
     })
     this.nodes.linkInput.dataset.placeholder = this.api.i18n.t('Link Url');
     this.nodes.linkInput.addEventListener("keyup", (e) => {
-      this.validateLinkInput(e.target.textContent);
-    });
-
-    this.nodes.registButton = this.make('button', [this.api.styles.button, this.CSS.registButton]);
-    this.nodes.registButton.type = 'button';
-    this.nodes.registButton.textContent = this.api.i18n.t('Set');
-    this.nodes.registButton.addEventListener('click', (event) => {
-      if (this.validateTextInput(this.nodes.textInput.textContent) && this.validateLinkInput(this.nodes.linkInput.textContent)) {
-        this.data = {
-          link: this.nodes.linkInput.textContent,
-          text: this.nodes.textInput.textContent,
-          alignment: this.data.alignment
-        }
-        this.show(AnyButton.STATE.VIEW);
+      if (this.validateLinkInput(e.target.textContent)) {
+        this.onEditInput(this.nodes);
       }
     });
 
+    const colorsHolder = this.make('div', [this.CSS.colorsHolder]);
+
+    const textColorHolder = this.make('div', [this.CSS.colorHolder]);
+    const textColorLabel = this.make('p', [this.CSS.colorHolderLabel]);
+    this.nodes.textColorInput = this.make('input', [this.CSS.inputColor], {
+      contentEditable: !this.readOnly,
+      type: "color",
+      value: this.config.defaultTextColor || AnyButton.DEFAULT_TEXT_COLOR
+    })
+    this.nodes.textColorInput.addEventListener('input', (event) => {
+      this.onEditInput(this.nodes)
+    })
+
+    textColorLabel.innerText = this.api.i18n.t('Text Color');
+    textColorHolder.appendChild(textColorLabel)
+    textColorHolder.appendChild(this.nodes.textColorInput)
+
+    const backgroundColorHolder = this.make('div', [this.CSS.colorHolder]);
+    const backgroundColorLabel = this.make('p', [this.CSS.colorHolderLabel]);
+    this.nodes.backgroundColorInput = this.make('input', [this.CSS.inputColor], {
+      contentEditable: !this.readOnly,
+      type: "color",
+      value: this.config.defaultBackgroundColor || AnyButton.DEFAULT_BACKGROUND_COLOR
+    })
+
+    this.nodes.backgroundColorInput.addEventListener('input', (event) => {
+      this.onEditInput(this.nodes)
+    })
+
+    backgroundColorLabel.innerText = this.api.i18n.t('Background Color');
+    backgroundColorHolder.appendChild(backgroundColorLabel)
+    backgroundColorHolder.appendChild(this.nodes.backgroundColorInput)
+
+    colorsHolder.appendChild(textColorHolder);
+    colorsHolder.appendChild(backgroundColorHolder);
+
     inputHolder.appendChild(this.nodes.textInput);
     inputHolder.appendChild(this.nodes.linkInput);
-    inputHolder.appendChild(this.nodes.registButton);
+    inputHolder.appendChild(colorsHolder);
 
     return inputHolder;
+  }
+
+  onEditInput(nodes) {
+    this.data = {
+      link: nodes.linkInput.textContent,
+      text: nodes.textInput.textContent,
+      text_color: nodes.textColorInput.value,
+      background_color: nodes.backgroundColorInput.value,
+      alignment: this.data.alignment
+    }
+
+    this.show(AnyButton.STATE.EDIT);
   }
 
   validateLinkInput(urlString) {
@@ -325,16 +379,20 @@ export default class AnyButton {
   init() {
     this.nodes.textInput.textContent = this._data.text;
     this.nodes.linkInput.textContent = this._data.link;
+    this.nodes.textColorInput.value = this._data.text_color;
+    this.nodes.backgroundColorInput.value = this._data.background_color;
   }
 
   show(state) {
     this.nodes.anyButton.textContent = this._data.text;
     this.nodes.anyButton.setAttribute("href", this._data.link);
+    this.nodes.anyButton.style.background = this._data.background_color;
+    this.nodes.anyButton.style.color = this._data.text_color;
     this.changeState(state);
   }
 
   makeAnyButtonHolder() {
-    const anyButtonHolder = this.make('div', [this.CSS.hide, this.CSS.anyButtonHolder, this.CSS.alignment[this.data.alignment]]);
+    const anyButtonHolder = this.make('div', [this.CSS.anyButtonHolder, this.CSS.alignment[this.data.alignment]]);
     this.nodes.anyButton = this.make('a', [this.CSS.btnColor], {
       target: '_blank',
       rel: 'nofollow noindex noreferrer',
@@ -348,14 +406,15 @@ export default class AnyButton {
     switch (state) {
       case AnyButton.STATE.EDIT:
         this.nodes.inputHolder.classList.remove(this.CSS.hide);
-        this.nodes.anyButtonHolder.classList.add(this.CSS.hide);
-        this.nodes.toggleHolder.classList.add(this.CSS.hide);
+        this.nodes.registButton.classList.remove(this.CSS.hide);
+        this.nodes.editButton.classList.add(this.CSS.hide);
 
         break;
       case AnyButton.STATE.VIEW:
         this.nodes.inputHolder.classList.add(this.CSS.hide);
-        this.nodes.anyButtonHolder.classList.remove(this.CSS.hide);
-        this.nodes.toggleHolder.classList.remove(this.CSS.hide);
+        this.nodes.registButton.classList.add(this.CSS.hide);
+        this.nodes.editButton.classList.remove(this.CSS.hide);
+
         break;
     }
   }
@@ -366,8 +425,8 @@ export default class AnyButton {
      <button class="edit-button" type='button'>Edit</button>
      </div>
      */
-    const toggleHolder = this.make('div', [this.CSS.hide, this.CSS.editButtonContainer]);
-    this.nodes.editButton = this.make('button', [this.CSS.editButton],
+    const toggleHolder = this.make('div', [this.CSS.editButtonContainer]);
+    this.nodes.editButton = this.make('button', [this.CSS.hide, this.CSS.editButton],
       {
         "type": "button"
       });
@@ -376,11 +435,31 @@ export default class AnyButton {
       this.data = {
         link: this.nodes.linkInput.textContent,
         text: this.nodes.textInput.textContent,
+        text_color: this.nodes.textColorInput.value,
+        background_color: this.nodes.backgroundColorInput.value,
         alignment: this.data.alignment,
       }
       this.show(AnyButton.STATE.EDIT);
     })
+
+    this.nodes.registButton = this.make('button', [this.CSS.registButton]);
+    this.nodes.registButton.type = 'button';
+    this.nodes.registButton.textContent = this.api.i18n.t('Set');
+    this.nodes.registButton.addEventListener('click', (event) => {
+      if (this.validateTextInput(this.nodes.textInput.textContent) && this.validateLinkInput(this.nodes.linkInput.textContent)) {
+        this.data = {
+          link: this.nodes.linkInput.textContent,
+          text: this.nodes.textInput.textContent,
+          text_color: this.nodes.textColorInput.value,
+          background_color: this.nodes.backgroundColorInput.value,
+          alignment: this.data.alignment
+        }
+        this.show(AnyButton.STATE.VIEW);
+      }
+    });
+
     toggleHolder.appendChild(this.nodes.editButton);
+    toggleHolder.appendChild(this.nodes.registButton);
 
     return toggleHolder;
   }

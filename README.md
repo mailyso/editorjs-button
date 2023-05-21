@@ -17,7 +17,7 @@ npm i --save editorjs-button
 Include module at your application
 
 ```javascript
-const anyButton = require('anyButton');
+import AnyButton from "editorjs-button";
 ```
 
 ### Download to your project's source dir
@@ -33,7 +33,7 @@ const anyButton = require('anyButton');
 
 Add a new Tool to the `tools` property of the Editor.js initial config.
 
-```javascript
+```json
 tools: {
         AnyButton: {
           class: AnyButton,
@@ -41,7 +41,10 @@ tools: {
           config:{
             css:{
               "btnColor": "btn--gray",
-            }
+            },
+            defaultAlignment: "center",
+            defaultTextColor: "#000",
+            defaultBackgroundColor: "#000",
           }
         },
       },
@@ -53,6 +56,8 @@ tools: {
               'Link Url': 'ボタンの飛び先のURL',
               'Set': "設定する",
               'Default Button': "デフォルト",
+              'Text Color': "버튼 색",
+              'Background Color': "배경 색",
             }
           }
         },
@@ -91,10 +96,13 @@ config:{
 
 ## Output data
 
-| Field  | Type     | Description      |
-| ------ | -------- | ---------------- |
-| link   | `string` | Exclusion HTML Tag text |
-| text   | `string` | Exclusion HTML Tag text |
+| Field            | Type     | Description              |
+|------------------| -------- |--------------------------|
+| link             | `string` | Exclusion HTML Tag text  |
+| text             | `string` | Exclusion HTML Tag text  |
+| alignment        | `string` | Exclusion HTML Tag text  |
+| text_color       | `string` | Color picker value |
+| background_color | `string` | Color picker value  |
 
 
 ```json
@@ -102,7 +110,10 @@ config:{
             "type" : "AnyButton",
             "data" : {
                 "link" : "https://editorjs.io/",
-                "text" : "editorjs official"
+                "text" : "editorjs official",
+                "alignment": "center",
+                "text_color": "#000",
+                "button_color": "#fff"
             }
         }
 ```
