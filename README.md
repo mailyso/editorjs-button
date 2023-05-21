@@ -29,40 +29,23 @@ import AnyButton from "editorjs-button";
 
 Add a new Tool to the `tools` property of the Editor.js initial config.
 
-```json
-tools: {
+```javascript
+this.editor = new EditorJS({
+    tools: {
         AnyButton: {
-          class: AnyButton,
-          inlineToolbar: false,
-          config:{
-            css:{
-              "btnColor": "btn--gray",
-            },
-            defaultAlignment: "center",
-            defaultTextColor: "#000",
-            defaultBackgroundColor: "#000",
-          }
-        },
-      },
-      i18n: {
-        messages: {
-          tools: {
-            "AnyButton": {
-            'Button Text': '버튼의 내용을 입력하세요.',
-            'Link Url': '버튼의 URL을 입력하세요. (https:// 포함)',
-            'Set': "확인",
-            'Default Button': "클릭",
-            'Edit': "수정",
-            'Text Color': "글자 색",
-            'Background Color': "배경 색",
-            },
-          }
-        },
-      },
-}
+            class: AnyButton,
+            inlineToolbar: false,
+            config: {
+                defaultAlignment: "center",
+                defaultTextColor: "#000000",
+                defaultBackgroundColor: "#FFFFFF",
+            }
+        }
+    }    
+})
 ```
 
-if customize css, input filed, button design, and etc... 
+if customize css, input filed, button design, and etc...
 
 ```
 config:{
@@ -82,16 +65,15 @@ config:{
 | text_color       | `string` | Color picker value |
 | background_color | `string` | Color picker value  |
 
-
 ```json
 {
-            "type" : "AnyButton",
-            "data" : {
-                "link" : "https://editorjs.io/",
-                "text" : "editorjs official",
-                "alignment": "center",
-                "text_color": "#000",
-                "button_color": "#fff"
-            }
-        }
+  "type": "AnyButton",
+  "data": {
+    "link": "https://editorjs.io/",
+    "text": "editorjs official",
+    "alignment": "center",
+    "text_color": "#000",
+    "button_color": "#fff"
+  }
+}
 ```
