@@ -235,7 +235,7 @@ export default class AnyButton {
     this.nodes.container.appendChild(this.nodes.inputHolder);
 
     this.init();
-    this.show(AnyButton.STATE.VIEW);
+    this.show(AnyButton.STATE.EDIT);
 
     return this.nodes.container;
   }
