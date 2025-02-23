@@ -234,10 +234,8 @@ export default class AnyButton {
     this.nodes.container.appendChild(this.nodes.toggleHolder);
     this.nodes.container.appendChild(this.nodes.inputHolder);
 
-    if (this._data.link !== "") {
-      this.init()
-      this.show(AnyButton.STATE.VIEW)
-    }
+    this.init();
+    this.show(AnyButton.STATE.VIEW);
 
     return this.nodes.container;
   }
@@ -384,7 +382,7 @@ export default class AnyButton {
   }
 
   show(state) {
-    this.nodes.anyButton.textContent = this._data.text;
+    this.nodes.anyButton.textContent = this._data.text || this.api.i18n.t("Default Button");
     this.nodes.anyButton.setAttribute("href", this._data.link);
     this.nodes.anyButton.style.background = this._data.background_color;
     this.nodes.anyButton.style.color = this._data.text_color;
